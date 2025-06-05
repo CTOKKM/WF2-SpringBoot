@@ -36,8 +36,12 @@
                 <input type="text" class="form-control" id="name" th:field="*{name}" required>
             </div>
             <div class="mb-3">
-                <label for="description" class="form-label">상품 설명</label>
-                <textarea class="form-control" id="description" th:field="*{description}" rows="3" required></textarea>
+                <label for="brand" class="form-label">브랜드</label>
+                <input type="text" class="form-control" id="brand" th:field="*{brand}" required>
+            </div>
+            <div class="mb-3">
+                <label for="madeIn" class="form-label">제조국</label>
+                <input type="text" class="form-control" id="madeIn" th:field="*{madeIn}" required>
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">가격</label>

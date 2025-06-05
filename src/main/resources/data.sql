@@ -1,22 +1,28 @@
 -- Insert roles
-INSERT INTO roles (name) VALUES ('ROLE_USER');
-INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+INSERT INTO roles (name) VALUES ('USER');
+INSERT INTO roles (name) VALUES ('ADMIN');
 
 -- Insert admin user (password: admin123)
 INSERT INTO users (email, password, name) 
-VALUES ('admin@example.com', '$2a$10$rDkPvvAFV6GgJjXpYWYw8OZJzqKxX5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5', 'Admin User');
+VALUES ('admin@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', 'Admin User');
 
 -- Assign admin role to admin user
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id
 FROM users u, roles r
-WHERE u.email = 'admin@example.com' AND r.name = 'ROLE_ADMIN';
+WHERE u.email = 'admin@example.com' AND r.name = 'ADMIN';
+
+-- Assign user role to admin user
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM users u, roles r
+WHERE u.email = 'admin@example.com' AND r.name = 'USER';
 
 -- Insert sample products
-INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S6', 'Samsung Corp', 'Korea', 600);
-INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S8', 'Samsung Corp', 'Korea', 800);
-INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S10', 'Samsung Corp', 'Korea', 1000);
-INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S21', 'Samsung Corp', 'Korea', 1000);
+INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S6', 'Samsung Corp', 'Korea', 600.0);
+INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S8', 'Samsung Corp', 'Korea', 800.0);
+INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S10', 'Samsung Corp', 'Korea', 1000.0);
+INSERT INTO product (name, brand, made_in, price) VALUES ('Galaxy S21', 'Samsung Corp', 'Korea', 1000.0);
 INSERT INTO product (name, brand, made_in, price) VALUES ('MacBook Air1', 'Apple', 'China', 10000);
 INSERT INTO product (name, brand, made_in, price) VALUES ('MacBook Air2', 'Apple', 'China', 10000);
 INSERT INTO product (name, brand, made_in, price) VALUES ('MacBook Air3', 'Apple', 'China', 10000);

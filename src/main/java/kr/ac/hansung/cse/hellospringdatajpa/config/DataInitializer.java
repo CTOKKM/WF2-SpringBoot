@@ -30,38 +30,50 @@ public class DataInitializer implements CommandLineRunner {
         logger.info("Starting data initialization...");
 
         // Create roles if they don't exist
-        if (!roleRepository.existsByName("ADMIN")) {
-            logger.info("Creating ADMIN role...");
-            Role adminRole = new Role();
-            adminRole.setName("ADMIN");
-            roleRepository.save(adminRole);
-            logger.info("ADMIN role created successfully");
-        }
+        Role adminRole = roleRepository.findByName("ADMIN")
+            .orElseGet(() -> {
+                logger.info("Creating ADMIN role...");
+                Role role = new Role();
+                role.setName("ADMIN");
+                Role savedRole = roleRepository.save(role);
+                logger.info("ADMIN role created with ID: {}", savedRole.getId());
+                return savedRole;
+            });
 
-        if (!roleRepository.existsByName("USER")) {
-            logger.info("Creating USER role...");
-            Role userRole = new Role();
-            userRole.setName("USER");
-            roleRepository.save(userRole);
-            logger.info("USER role created successfully");
-        }
+        Role userRole = roleRepository.findByName("USER")
+            .orElseGet(() -> {
+                logger.info("Creating USER role...");
+                Role role = new Role();
+                role.setName("USER");
+                Role savedRole = roleRepository.save(role);
+                logger.info("USER role created with ID: {}", savedRole.getId());
+                return savedRole;
+            });
 
         // Create admin user if it doesn't exist
         if (!userRepository.existsByEmail("admin@example.com")) {
             logger.info("Creating admin user...");
             User admin = new User();
             admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("admin123")); // 기본 비밀번호: admin123
+            String encodedPassword = passwordEncoder.encode("admin123");
+            logger.info("Encoded password for admin: {}", encodedPassword);
+            admin.setPassword(encodedPassword);
             admin.setName("관리자");
-
-            Role adminRole = roleRepository.findByName("ADMIN")
-                .orElseThrow(() -> new RuntimeException("ADMIN 역할을 찾을 수 없습니다."));
             admin.addRole(adminRole);
-
-            userRepository.save(admin);
-            logger.info("Admin user created successfully");
+            admin.addRole(userRole);  // Admin also has USER role
+            User savedAdmin = userRepository.save(admin);
+            logger.info("Admin user created successfully with ID: {}", savedAdmin.getId());
+            logger.info("Admin user roles: {}", savedAdmin.getRoles());
         } else {
-            logger.info("Admin user already exists");
+            logger.info("Admin user already exists, updating password...");
+            User admin = userRepository.findByEmail("admin@example.com")
+                .orElseThrow(() -> new RuntimeException("Admin user not found"));
+            String encodedPassword = passwordEncoder.encode("admin123");
+            logger.info("New encoded password for admin: {}", encodedPassword);
+            admin.setPassword(encodedPassword);
+            User updatedAdmin = userRepository.save(admin);
+            logger.info("Admin password updated successfully");
+            logger.info("Admin user roles: {}", updatedAdmin.getRoles());
         }
 
         logger.info("Data initialization completed");
