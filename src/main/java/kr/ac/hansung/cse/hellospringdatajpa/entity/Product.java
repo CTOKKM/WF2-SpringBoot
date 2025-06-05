@@ -1,31 +1,28 @@
 package kr.ac.hansung.cse.hellospringdatajpa.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
 @Entity
-@Table(name = "product")
+@Data
+@NoArgsConstructor
 public class Product {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String name;
-    private String brand;
-    private String madeIn;
-    private double price;
+    private String description;
+    private Double price;
 
-    public Product(String name, String brand, String madeIn, double price) {
+    public Product(String name, String description, Double price) {
         this.name = name;
-        this.brand = brand;
-        this.madeIn = madeIn;
+        this.description = description;
         this.price = price;
     }
 }

@@ -1,63 +1,68 @@
 package kr.ac.hansung.cse.hellospringdatajpa.controller;
 
 import kr.ac.hansung.cse.hellospringdatajpa.entity.Product;
-import kr.ac.hansung.cse.hellospringdatajpa.service.ProductService;
+import kr.ac.hansung.cse.hellospringdatajpa.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
     @Autowired
-    private ProductService service;
+    private ProductRepository productRepository;
 
-    @GetMapping({"", "/"}) // products 또는 /products/ 둘 다 매핑
-    public String viewHomePage(Model model) {
-
-        List<Product> listProducts = service.listAll();
-        model.addAttribute("listProducts", listProducts);
-
-        return "index";
+    @GetMapping({"", "/"})
+    public String listProducts(Model model) {
+        model.addAttribute("products", productRepository.findAll());
+        return "products/index";
     }
 
     @GetMapping("/new")
-    public String showNewProductPage(Model model) {
-
-        Product product = new Product();
-        model.addAttribute("product", product);
-
-        return "new_product";
+    public String newProductForm(Model model) {
+        model.addAttribute("product", new Product());
+        return "products/new";
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditProductPage(@PathVariable(name = "id") Long id, Model model) {
-
-        Product product = service.get(id);
-        model.addAttribute("product", product);
-
-        return "edit_product";
-    }
-
-    // @ModelAttribute는  Form data (예: name=Laptop&brand=Samsung&madeIn=Korea&price=1000.00)를 Product 객체
-    // @RequestBody는 HTTP 요청 본문에 포함된
-    //  JSON 데이터(예: {"name": "Laptop", "brand": "Samsung", "madeIn": "Korea", "price": 1000.00})를 Product 객체에 매핑
-    @PostMapping("/save")
-    public String saveProduct(@ModelAttribute("product") Product product) {
-
-        service.save(product);
-
+    @PostMapping("/new")
+    public String createProduct(@ModelAttribute Product product, RedirectAttributes redirectAttributes) {
+        if (product.getPrice() < 0) {
+            redirectAttributes.addFlashAttribute("error", "가격은 0 이상이어야 합니다.");
+            return "redirect:/products/new";
+        }
+        productRepository.save(product);
+        redirectAttributes.addFlashAttribute("success", "상품이 등록되었습니다.");
         return "redirect:/products";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable(name = "id") Long id) {
+    @GetMapping("/edit/{id}")
+    public String editProductForm(@PathVariable Long id, Model model) {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid product Id:" + id));
+        model.addAttribute("product", product);
+        return "products/edit";
+    }
 
-        service.delete(id);
+    @PostMapping("/edit/{id}")
+    public String updateProduct(@PathVariable Long id, @ModelAttribute Product product, 
+                              RedirectAttributes redirectAttributes) {
+        if (product.getPrice() < 0) {
+            redirectAttributes.addFlashAttribute("error", "가격은 0 이상이어야 합니다.");
+            return "redirect:/products/edit/" + id;
+        }
+        product.setId(id);
+        productRepository.save(product);
+        redirectAttributes.addFlashAttribute("success", "상품이 수정되었습니다.");
+        return "redirect:/products";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        productRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("success", "상품이 삭제되었습니다.");
         return "redirect:/products";
     }
 }

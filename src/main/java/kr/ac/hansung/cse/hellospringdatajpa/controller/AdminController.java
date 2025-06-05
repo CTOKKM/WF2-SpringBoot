@@ -14,9 +14,9 @@ public class AdminController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/users")
-    public String listUsers(Model model) {
+    @GetMapping({"", "/"})
+    public String adminPage(Model model) {
         model.addAttribute("users", userRepository.findAll());
-        return "admin/users";
+        return "admin/index";
     }
 } 
