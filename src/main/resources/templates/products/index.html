@@ -72,7 +72,7 @@
                         </p>
                         <p class="card-text">
                             <strong>가격: </strong>
-                            <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA') + '원'}">₩0</span>
+                            <span th:text="${#numbers.formatDecimal(product.price, 0, 0) + '원'}">₩0</span>
                         </p>
                     </div>
                     <div class="card-footer bg-transparent" th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
