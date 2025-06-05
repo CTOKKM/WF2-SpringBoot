@@ -28,6 +28,9 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
     
+    @Column(length = 255)
+    private String description;
+    
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
     
