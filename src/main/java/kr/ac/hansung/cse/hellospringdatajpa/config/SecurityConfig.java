@@ -30,6 +30,10 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .defaultSuccessUrl("/products", true)
                 .failureUrl("/login?error=true")
+                .successHandler((request, response, authentication) -> {
+                    request.getSession().setAttribute("success", authentication.getName() + "님, 환영합니다!");
+                    response.sendRedirect("/products");
+                })
                 .permitAll()
             )
             .logout(logout -> logout
